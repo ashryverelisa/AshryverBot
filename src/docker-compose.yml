@@ -6,8 +6,35 @@ services:
     image: ashryverbot:latest
     container_name: ashryverbot
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__AshryverBot: "Host=postgres;Port=5432;Database=ashryverbot;Username=ashryverbot;Password=${POSTGRES_PASSWORD:-ashryverbot}"
+      DataProtection__KeyPath: /keys
+    volumes:
+      - dataprotection-keys:/keys
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ashryverbot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ashryverbot
+      POSTGRES_USER: ashryverbot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ashryverbot}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ashryverbot -d ashryverbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:
+  dataprotection-keys:
