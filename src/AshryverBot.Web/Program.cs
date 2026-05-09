@@ -33,7 +33,7 @@ builder.Services.AddTwitchLogin(builder.Configuration);
 
 var app = builder.Build();
 
-var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AshryverBotDbContext>>();
+var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
 await using (var db = await dbContextFactory.CreateDbContextAsync())
 {
     await db.Database.MigrateAsync();
