@@ -4,6 +4,8 @@ namespace AshryverBot.Database.Entities;
 
 public class TwitchTokenEntity
 {
+    public Guid Id { get; set; }
+
     [MaxLength(64)]
     public required string TwitchUserId { get; set; }
 

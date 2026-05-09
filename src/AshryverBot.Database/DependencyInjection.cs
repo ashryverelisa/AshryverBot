@@ -20,6 +20,7 @@ public static class DependencyInjection
                 npgsql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name)));
 
         services.AddScoped<ITwitchTokenRepository, TwitchTokenRepository>();
+        services.AddScoped<ICommandRepository, CommandRepository>();
 
         return services;
     }
