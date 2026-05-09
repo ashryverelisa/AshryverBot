@@ -15,9 +15,9 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 $"Connection string 'ConnectionStrings:{ConnectionStringName}' is not configured.");
 
-        services.AddDbContextFactory<AshryverBotDbContext>(options =>
+        services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql =>
-                npgsql.MigrationsAssembly(typeof(AshryverBotDbContext).Assembly.GetName().Name)));
+                npgsql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name)));
 
         services.AddScoped<ITwitchTokenRepository, TwitchTokenRepository>();
 

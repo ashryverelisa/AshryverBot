@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AshryverBot.Database.Repositories;
 
-public class TwitchTokenRepository(IDbContextFactory<AshryverBotDbContext> dbContextFactory)
+public class TwitchTokenRepository(IDbContextFactory<ApplicationDbContext> dbContextFactory)
     : ITwitchTokenRepository
 {
     public async Task<TwitchTokenEntity?> GetAsync(string twitchUserId, CancellationToken cancellationToken = default)

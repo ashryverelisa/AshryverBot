@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AshryverBot.Database;
 
-public class AshryverBotDbContext(DbContextOptions<AshryverBotDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<TwitchTokenEntity> TwitchTokens => Set<TwitchTokenEntity>();
 
