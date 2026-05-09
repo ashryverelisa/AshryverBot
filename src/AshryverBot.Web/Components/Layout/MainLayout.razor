@@ -12,7 +12,19 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    <span class="me-3">Hi, @context.User.Identity?.Name</span>
+                    <form action="/logout" method="post" class="d-inline">
+                        <AntiforgeryToken/>
+                        <button type="submit" class="btn btn-link p-0 align-baseline">Logout</button>
+                    </form>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/login">Login mit Twitch</a>
+                </NotAuthorized>
+            </AuthorizeView>
+            <a class="ms-3" href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
         <article class="content px-4">
