@@ -1,7 +1,121 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard · AshryverBot</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudStack Spacing="6">
+    <div>
+        <MudText Typo="Typo.h4">Dashboard</MudText>
+        <MudText Typo="Typo.subtitle1" Class="mud-text-secondary">
+            Overview of your Twitch bot.
+        </MudText>
+    </div>
 
-Welcome to your new app.
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Spacing="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Bot status</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.h5">Online</MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">Connected for 02:14 h</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Spacing="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Size="Size.Small" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Viewers</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.h5">142</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Success">+12 in the last hour</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Spacing="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Terminal" Color="Color.Tertiary" Size="Size.Small" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Commands executed</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.h5">87</MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">today</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Spacing="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Error" Size="Size.Small" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">New followers</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.h5">5</MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">today</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid>
+        <MudItem xs="12" md="8">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                    <MudText Typo="Typo.h6">Recent activity</MudText>
+                    <MudButton Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowForward" Size="Size.Small">
+                        View all
+                    </MudButton>
+                </MudStack>
+                <MudList T="string" Dense="true">
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Login" IconColor="Color.Success">
+                        <MudText Typo="Typo.body2"><b>NewViewer123</b> joined the channel</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">2 min ago</MudText>
+                    </MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Terminal" IconColor="Color.Primary">
+                        <MudText Typo="Typo.body2">Command <b>!discord</b> executed by <b>ModFan</b></MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">5 min ago</MudText>
+                    </MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Favorite" IconColor="Color.Error">
+                        <MudText Typo="Typo.body2"><b>StreamLover</b> is now following</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">12 min ago</MudText>
+                    </MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Star" IconColor="Color.Warning">
+                        <MudText Typo="Typo.body2"><b>BigSpender</b> gifted 5 subs</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">30 min ago</MudText>
+                    </MudListItem>
+                </MudList>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudText Typo="Typo.h6" Class="mb-3">Quick actions</MudText>
+                <MudStack Spacing="2">
+                    <MudButton Href="commands"
+                               Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               FullWidth="true">
+                        New command
+                    </MudButton>
+                    <MudButton Href="chat"
+                               Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Chat"
+                               FullWidth="true">
+                        Open chat
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Refresh"
+                               FullWidth="true">
+                        Restart bot
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudStack>

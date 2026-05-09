@@ -1,0 +1,147 @@
+@page "/chat"
+
+<PageTitle>Chat · AshryverBot</PageTitle>
+
+<MudStack Spacing="4">
+    <div>
+        <MudText Typo="Typo.h4">Chat</MudText>
+        <MudText Typo="Typo.subtitle1" Class="mud-text-secondary">
+            Live preview of the Twitch chat.
+        </MudText>
+    </div>
+
+    <MudGrid>
+        <MudItem xs="12" md="9">
+            <MudPaper Elevation="2" Class="d-flex flex-column" Style="height: calc(100vh - 240px); min-height: 480px;">
+                <MudToolBar Dense="true">
+                    <MudIcon Icon="@Icons.Material.Filled.Tag" Class="me-2" />
+                    <MudText Typo="Typo.h6">#ashryver</MudText>
+                    <MudSpacer />
+                    <MudChip T="string" Color="Color.Error" Size="Size.Small" Icon="@Icons.Material.Filled.FiberManualRecord">
+                        LIVE
+                    </MudChip>
+                </MudToolBar>
+                <MudDivider />
+
+                <div class="chat-stream">
+                    @foreach (var msg in _messages)
+                    {
+                        <div class="chat-row">
+                            <MudAvatar Color="@msg.Color" Size="Size.Small" Class="me-2">
+                                @msg.User[0]
+                            </MudAvatar>
+                            <div class="chat-bubble">
+                                <div class="chat-meta">
+                                    @if (msg.Badges.Length > 0)
+                                    {
+                                        @foreach (var badge in msg.Badges)
+                                        {
+                                            <MudChip T="string" Size="Size.Small" Variant="Variant.Filled"
+                                                     Color="@BadgeColor(badge)" Class="chat-badge">
+                                                @badge
+                                            </MudChip>
+                                        }
+                                    }
+                                    <MudText Typo="Typo.subtitle2" Style="display:inline;"><b>@msg.User</b></MudText>
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary" Style="display:inline; margin-left: 8px;">
+                                        @msg.Time.ToString("HH:mm")
+                                    </MudText>
+                                </div>
+                                <MudText Typo="Typo.body2">@msg.Text</MudText>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <MudDivider />
+                <div class="pa-3">
+                    <MudTextField T="string"
+                                  @bind-Value="_input"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Placeholder="Send a message..."
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Send"
+                                  AdornmentColor="Color.Primary"
+                                  OnAdornmentClick="Send"
+                                  OnKeyDown="OnKeyDown"
+                                  Immediate="true" />
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+            <MudStack Spacing="3">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2 mud-text-secondary">Channel</MudText>
+                    <MudStack Spacing="2">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.body2">Viewers</MudText>
+                            <MudText Typo="Typo.body1"><b>142</b></MudText>
+                        </MudStack>
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.body2">Uptime</MudText>
+                            <MudText Typo="Typo.body1"><b>02:14</b></MudText>
+                        </MudStack>
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.body2">Category</MudText>
+                            <MudText Typo="Typo.body1"><b>Just Chatting</b></MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2 mud-text-secondary">Mods in chat</MudText>
+                    <MudList T="string" Dense="true">
+                        @foreach (var mod in _mods)
+                        {
+                            <MudListItem T="string" Icon="@Icons.Material.Filled.Shield" IconColor="Color.Success">
+                                @mod
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudPaper>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudStack>
+
+@code {
+    private string _input = string.Empty;
+
+    private readonly List<ChatMessage> _messages = new()
+    {
+        new("ModFan",      "Welcome to the stream!",                   new[] { "Mod" },  Color.Success, DateTime.Now.AddMinutes(-12)),
+        new("StreamLover", "Hi @ashryver!",                            Array.Empty<string>(), Color.Primary, DateTime.Now.AddMinutes(-10)),
+        new("BigSpender",  "PogChamp",                                 new[] { "VIP" },  Color.Tertiary, DateTime.Now.AddMinutes(-7)),
+        new("NewViewer",   "What are we playing today?",               Array.Empty<string>(), Color.Info,    DateTime.Now.AddMinutes(-5)),
+        new("AshryverBot", "Stream has been live for 02:14 — stick around!", new[] { "Bot" }, Color.Secondary, DateTime.Now.AddMinutes(-2)),
+    };
+
+    private readonly string[] _mods = { "ModFan", "TrustyHelper", "AshryverBot" };
+
+    private static Color BadgeColor(string badge) => badge switch
+    {
+        "Mod" => Color.Success,
+        "VIP" => Color.Tertiary,
+        "Bot" => Color.Secondary,
+        _     => Color.Default,
+    };
+
+    private void Send()
+    {
+        if (string.IsNullOrWhiteSpace(_input))
+            return;
+
+        _messages.Add(new ChatMessage("You", _input.Trim(), Array.Empty<string>(), Color.Primary, DateTime.Now));
+        _input = string.Empty;
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+            Send();
+    }
+
+    private sealed record ChatMessage(string User, string Text, string[] Badges, Color Color, DateTime Time);
+}

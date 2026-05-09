@@ -1,40 +1,129 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <span class="me-3">Hi, @context.User.Identity?.Name</span>
-                    <form action="/logout" method="post" class="d-inline">
-                        <AntiforgeryToken/>
-                        <button type="submit" class="btn btn-link p-0 align-baseline">Logout</button>
-                    </form>
-                </Authorized>
-                <NotAuthorized>
-                    <a href="/login">Login mit Twitch</a>
-                </NotAuthorized>
-            </AuthorizeView>
-            <a class="ms-3" href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<AuthorizeView Context="auth">
+    <Authorized>
+        <MudLayout>
+            <MudAppBar Elevation="1" Color="Color.Surface">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                               Color="Color.Inherit"
+                               Edge="Edge.Start"
+                               OnClick="ToggleDrawer" />
+                <MudIcon Icon="@Icons.Material.Filled.SmartToy" Color="Color.Primary" Class="ms-2 me-2" />
+                <MudText Typo="Typo.h6">AshryverBot</MudText>
+                <MudSpacer />
+                <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Outlined" Class="me-3">
+                    Connected
+                </MudChip>
+                <MudText Class="me-3">@auth.User.Identity?.Name</MudText>
+                <form action="/logout" method="post" data-enhance-nav="false" style="margin:0;">
+                    <AntiforgeryToken />
+                    <MudIconButton ButtonType="ButtonType.Submit"
+                                   Icon="@Icons.Material.Filled.Logout"
+                                   Color="Color.Inherit"
+                                   title="Logout" />
+                </form>
+            </MudAppBar>
+            <MudDrawer @bind-Open="_drawerOpen"
+                       ClipMode="DrawerClipMode.Always"
+                       Elevation="2"
+                       Variant="DrawerVariant.Responsive">
+                <NavMenu />
+            </MudDrawer>
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.False" Class="pa-6">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <div class="login-shell">
+            <MudPaper Elevation="12" Class="pa-8 login-card">
+                <MudStack Spacing="4" AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@Icons.Material.Filled.SmartToy"
+                             Color="Color.Primary"
+                             Style="font-size: 72px;" />
+                    <MudText Typo="Typo.h4" Align="Align.Center">AshryverBot</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Class="mud-text-secondary">
+                        Please sign in with your Twitch account to access the bot dashboard.
+                    </MudText>
+                    <MudButton Href="/login"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.LiveTv"
+                               FullWidth="true"
+                               data-enhance-nav="false">
+                        Sign in with Twitch
+                    </MudButton>
+                    <MudText Typo="Typo.caption" Align="Align.Center" Class="mud-text-secondary">
+                        You will be redirected to secure Twitch authentication.
+                    </MudText>
+                </MudStack>
+            </MudPaper>
         </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    private readonly MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#9146FF",
+            Secondary = "#772CE8",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#0E0E10",
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#9146FF",
+            Secondary = "#772CE8",
+            Tertiary = "#F472B6",
+            Background = "#0E0E10",
+            Surface = "#18181B",
+            AppbarBackground = "#1F1F23",
+            AppbarText = "#EFEFF1",
+            DrawerBackground = "#1F1F23",
+            DrawerText = "#EFEFF1",
+            DrawerIcon = "#EFEFF1",
+            TextPrimary = "#EFEFF1",
+            TextSecondary = "#ADADB8",
+            ActionDefault = "#EFEFF1",
+            ActionDisabled = "#53535F",
+            DividerLight = "#2D2D33",
+            LinesDefault = "#2D2D33",
+            TableLines = "#2D2D33",
+        },
+        Typography = new Typography
+        {
+            Default = new DefaultTypography
+            {
+                FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" }
+            },
+            H4 = new H4Typography { FontWeight = "600" },
+            H5 = new H5Typography { FontWeight = "600" },
+            H6 = new H6Typography { FontWeight = "600" },
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "10px",
+            DrawerWidthLeft = "260px",
+        },
+    };
+}
