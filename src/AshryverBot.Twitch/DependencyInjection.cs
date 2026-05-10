@@ -21,6 +21,11 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(Constants.BaseAuth.TrimEnd('/') + "/");
         });
 
+        services.AddHttpClient<ITwitchClient, TwitchClient>(client =>
+        {
+            client.BaseAddress = new Uri(Constants.BaseHelix.TrimEnd('/') + "/");
+        });
+
         return services;
     }
 }
