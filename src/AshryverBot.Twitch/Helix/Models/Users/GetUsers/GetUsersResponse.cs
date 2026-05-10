@@ -2,7 +2,4 @@
 
 namespace AshryverBot.Twitch.Helix.Models.Users.GetUsers;
 
-public record GetUsersResponse
-(
-    [property: JsonPropertyName("data")] IReadOnlyCollection<User> Users
-);
+public record GetUsersResponse ([property: JsonPropertyName("data")] IReadOnlyCollection<User> Users );
