@@ -21,6 +21,13 @@ public interface ITwitchClient
         IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
         CancellationToken cancellationToken = default);
 
+    Task PostAsync<TRequest>(
+        string resourceUrl,
+        string accessToken,
+        TRequest payload,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default);
+
     Task PostAsync(
         string resourceUrl,
         string accessToken,
@@ -52,6 +59,24 @@ public interface ITwitchClient
         string resourceUrl,
         string accessToken,
         TRequest payload,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default);
+
+    Task<TResponse> PutAsync<TResponse>(
+        string resourceUrl,
+        string accessToken,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default);
+
+    Task PutAsync(
+        string resourceUrl,
+        string accessToken,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default);
+
+    Task<TResponse> DeleteAsync<TResponse>(
+        string resourceUrl,
+        string accessToken,
         IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
         CancellationToken cancellationToken = default);
 

@@ -39,6 +39,14 @@ public class TwitchClient(
         CancellationToken cancellationToken = default)
         => SendForResponseAsync<TResponse>(HttpMethod.Post, resourceUrl, accessToken, payload: null, queryParameters, cancellationToken);
 
+    public Task PostAsync<TRequest>(
+        string resourceUrl,
+        string accessToken,
+        TRequest payload,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default)
+        => SendAsync(HttpMethod.Post, resourceUrl, accessToken, JsonContent.Create(payload), queryParameters, cancellationToken);
+
     public Task PostAsync(
         string resourceUrl,
         string accessToken,
@@ -77,6 +85,27 @@ public class TwitchClient(
         IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
         CancellationToken cancellationToken = default)
         => SendAsync(HttpMethod.Put, resourceUrl, accessToken, JsonContent.Create(payload), queryParameters, cancellationToken);
+
+    public Task<TResponse> PutAsync<TResponse>(
+        string resourceUrl,
+        string accessToken,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default)
+        => SendForResponseAsync<TResponse>(HttpMethod.Put, resourceUrl, accessToken, payload: null, queryParameters, cancellationToken);
+
+    public Task PutAsync(
+        string resourceUrl,
+        string accessToken,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default)
+        => SendAsync(HttpMethod.Put, resourceUrl, accessToken, payload: null, queryParameters, cancellationToken);
+
+    public Task<TResponse> DeleteAsync<TResponse>(
+        string resourceUrl,
+        string accessToken,
+        IReadOnlyList<KeyValuePair<string, string>>? queryParameters = null,
+        CancellationToken cancellationToken = default)
+        => SendForResponseAsync<TResponse>(HttpMethod.Delete, resourceUrl, accessToken, payload: null, queryParameters, cancellationToken);
 
     public Task DeleteAsync(
         string resourceUrl,
