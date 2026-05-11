@@ -3,8 +3,10 @@ using AshryverBot.Twitch.Clients.Interfaces;
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.Helix.Apis;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;
+using AshryverBot.Twitch.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AshryverBot.Twitch;
 
@@ -18,6 +20,9 @@ public static class DependencyInjection
             .Validate(o => !string.IsNullOrWhiteSpace(o.ClientSecret), "Twitch:ClientSecret missing.")
             .ValidateOnStart();
 
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddTransient<TwitchRateLimitHandler>();
+
         services.AddHttpClient<ITwitchOAuthClient, TwitchOAuthClient>(client =>
         {
             client.BaseAddress = new Uri(Constants.BaseAuth.TrimEnd('/') + "/");
@@ -26,7 +31,8 @@ public static class DependencyInjection
         services.AddHttpClient<ITwitchClient, TwitchClient>(client =>
         {
             client.BaseAddress = new Uri(Constants.BaseHelix.TrimEnd('/') + "/");
-        });
+        })
+        .AddHttpMessageHandler<TwitchRateLimitHandler>();
 
         services.AddScoped<IAnalyticsApi, AnalyticsApi>();
         services.AddScoped<IBitsApi, BitsApi>();
