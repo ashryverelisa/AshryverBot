@@ -1,6 +1,8 @@
 using AshryverBot.Twitch.Clients;
 using AshryverBot.Twitch.Clients.Interfaces;
 using AshryverBot.Twitch.Configuration;
+using AshryverBot.Twitch.Helix.Apis;
+using AshryverBot.Twitch.Helix.Apis.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +27,35 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri(Constants.BaseHelix.TrimEnd('/') + "/");
         });
+
+        services.AddScoped<IAnalyticsApi, AnalyticsApi>();
+        services.AddScoped<IBitsApi, BitsApi>();
+        services.AddScoped<IChannelPointsApi, ChannelPointsApi>();
+        services.AddScoped<IChannelsApi, ChannelsApi>();
+        services.AddScoped<ICharityApi, CharityApi>();
+        services.AddScoped<IChatApi, ChatApi>();
+        services.AddScoped<IClipsApi, ClipsApi>();
+        services.AddScoped<IConduitsApi, ConduitsApi>();
+        services.AddScoped<IContentClassificationLabelsApi, ContentClassificationLabelsApi>();
+        services.AddScoped<IEntitlementsApi, EntitlementsApi>();
+        services.AddScoped<IEventSubApi, EventSubApi>();
+        services.AddScoped<IExtensionsApi, ExtensionsApi>();
+        services.AddScoped<IGamesApi, GamesApi>();
+        services.AddScoped<IGoalsApi, GoalsApi>();
+        services.AddScoped<IGuestStarApi, GuestStarApi>();
+        services.AddScoped<IHypeTrainApi, HypeTrainApi>();
+        services.AddScoped<IModerationApi, ModerationApi>();
+        services.AddScoped<IPollsApi, PollsApi>();
+        services.AddScoped<IPredictionsApi, PredictionsApi>();
+        services.AddScoped<IRaidsApi, RaidsApi>();
+        services.AddScoped<IScheduleApi, ScheduleApi>();
+        services.AddScoped<ISearchApi, SearchApi>();
+        services.AddScoped<IStreamsApi, StreamsApi>();
+        services.AddScoped<ISubscriptionsApi, SubscriptionsApi>();
+        services.AddScoped<ITeamsApi, TeamsApi>();
+        services.AddScoped<IUsersApi, UsersApi>();
+        services.AddScoped<IVideosApi, VideosApi>();
+        services.AddScoped<IWhispersApi, WhispersApi>();
 
         return services;
     }
