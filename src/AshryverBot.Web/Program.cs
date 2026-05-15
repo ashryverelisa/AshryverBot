@@ -28,7 +28,7 @@ if (!string.IsNullOrWhiteSpace(dataProtectionKeyPath))
 
 builder.Services.AddAshryverBotDatabase(builder.Configuration);
 builder.Services.AddTwitchClients(builder.Configuration);
-builder.Services.AddAshryverBotInfrastructure();
+builder.Services.AddAshryverBotInfrastructure(builder.Configuration);
 builder.Services.AddTwitchLogin(builder.Configuration);
 
 var app = builder.Build();

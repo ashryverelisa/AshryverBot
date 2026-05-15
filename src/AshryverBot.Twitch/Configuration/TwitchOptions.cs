@@ -7,4 +7,5 @@ public class TwitchOptions
     public string ClientId { get; set; } = string.Empty;
     public string ClientSecret { get; set; } = string.Empty;
     public string? BotUserId { get; set; }
+    public string? BroadcasterId { get; set; }
 }

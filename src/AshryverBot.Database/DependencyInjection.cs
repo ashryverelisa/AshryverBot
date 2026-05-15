@@ -21,6 +21,7 @@ public static class DependencyInjection
 
         services.AddScoped<ITwitchTokenRepository, TwitchTokenRepository>();
         services.AddScoped<ICommandRepository, CommandRepository>();
+        services.AddScoped<IWatchtimeRepository, WatchtimeRepository>();
 
         return services;
     }

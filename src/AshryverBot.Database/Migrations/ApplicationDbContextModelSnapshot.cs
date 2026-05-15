@@ -126,6 +126,46 @@ namespace AshryverBot.Database.Migrations
 
                     b.ToTable("twitch_tokens", (string)null);
                 });
+
+            modelBuilder.Entity("AshryverBot.Database.Entities.WatchtimeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<DateTimeOffset>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<long>("TotalSeconds")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TwitchUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TwitchUserId")
+                        .IsUnique();
+
+                    b.ToTable("watchtimes", (string)null);
+                });
 #pragma warning restore 612, 618
         }
     }
