@@ -2,6 +2,7 @@ using AshryverBot.Infrastructure.BotStatus;
 using AshryverBot.Infrastructure.BotStatus.Interfaces;
 using AshryverBot.Infrastructure.Chat;
 using AshryverBot.Infrastructure.Chat.Commands;
+using AshryverBot.Infrastructure.Chat.Interfaces;
 using AshryverBot.Infrastructure.EventSub;
 using AshryverBot.Infrastructure.EventSub.Handlers;
 using AshryverBot.Infrastructure.StreamStats;

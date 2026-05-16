@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AshryverBot.Database.Repositories;
+using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Twitch.Configuration;
 using AspNet.Security.OAuth.Twitch;

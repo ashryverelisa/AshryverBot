@@ -1,3 +1,4 @@
+using AshryverBot.Infrastructure.Chat.Interfaces;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;

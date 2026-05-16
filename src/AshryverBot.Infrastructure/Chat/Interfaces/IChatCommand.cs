@@ -1,4 +1,6 @@
-namespace AshryverBot.Infrastructure.Chat;
+using AshryverBot.Infrastructure.Chat.Commands;
+
+namespace AshryverBot.Infrastructure.Chat.Interfaces;
 
 public interface IChatCommand
 {
@@ -9,7 +11,3 @@ public interface IChatCommand
 
     Task ExecuteAsync(ChatCommandContext context, CancellationToken cancellationToken);
 }
-
-public record ChatCommandContext(
-    ChatMessage Message,
-    IReadOnlyList<string> Arguments);

@@ -1,4 +1,5 @@
 using AshryverBot.Database.Entities;
+using AshryverBot.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace AshryverBot.Database.Repositories;

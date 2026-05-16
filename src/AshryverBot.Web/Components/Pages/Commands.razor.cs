@@ -1,5 +1,6 @@
 ﻿using AshryverBot.Database.Entities;
 using AshryverBot.Database.Repositories;
+using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Web.Components.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;

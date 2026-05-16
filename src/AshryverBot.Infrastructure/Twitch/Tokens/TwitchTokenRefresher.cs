@@ -1,4 +1,5 @@
 using AshryverBot.Database.Repositories;
+using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Twitch.Clients.Interfaces;
 using Microsoft.Extensions.Logging;
 

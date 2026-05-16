@@ -1,4 +1,4 @@
-namespace AshryverBot.Infrastructure.Chat;
+namespace AshryverBot.Infrastructure.Chat.Interfaces;
 
 public interface IChatResponder
 {

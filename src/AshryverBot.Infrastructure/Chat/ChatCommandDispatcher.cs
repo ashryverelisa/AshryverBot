@@ -1,5 +1,8 @@
 using System.Collections.Concurrent;
 using AshryverBot.Database.Repositories;
+using AshryverBot.Database.Repositories.Interfaces;
+using AshryverBot.Infrastructure.Chat.Commands;
+using AshryverBot.Infrastructure.Chat.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

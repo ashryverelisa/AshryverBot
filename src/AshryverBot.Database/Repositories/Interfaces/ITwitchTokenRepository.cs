@@ -1,6 +1,6 @@
 using AshryverBot.Database.Entities;
 
-namespace AshryverBot.Database.Repositories;
+namespace AshryverBot.Database.Repositories.Interfaces;
 
 public interface ITwitchTokenRepository
 {

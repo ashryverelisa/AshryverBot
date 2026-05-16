@@ -1,4 +1,5 @@
 using AshryverBot.Database.Repositories;
+using AshryverBot.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
