@@ -1,5 +1,4 @@
 using AshryverBot.Database.Entities;
-using AshryverBot.Database.Repositories;
 using AshryverBot.Database.Repositories.Interfaces;
 
 namespace AshryverBot.Infrastructure.Twitch.Tokens;

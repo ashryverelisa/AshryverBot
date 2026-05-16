@@ -3,6 +3,8 @@ using AshryverBot.Infrastructure.BotStatus.Interfaces;
 using AshryverBot.Infrastructure.Chat;
 using AshryverBot.Infrastructure.Chat.Commands;
 using AshryverBot.Infrastructure.Chat.Interfaces;
+using AshryverBot.Infrastructure.Commands;
+using AshryverBot.Infrastructure.Commands.Interfaces;
 using AshryverBot.Infrastructure.EventSub;
 using AshryverBot.Infrastructure.EventSub.Handlers;
 using AshryverBot.Infrastructure.StreamStats;
@@ -14,7 +16,6 @@ using AshryverBot.Twitch.EventSub.WebSocket;
 using AshryverBot.Twitch.EventSub.WebSocket.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace AshryverBot.Infrastructure;
 
@@ -32,6 +33,8 @@ public static class DependencyInjection
 
             services.AddScoped<IChatResponder, ChatResponder>();
             services.AddSingleton<IChatCommandDispatcher, ChatCommandDispatcher>();
+
+            services.AddScoped<ICommandService, CommandService>();
 
             services.AddScoped<IChatCommand, WatchtimeCommand>();
 

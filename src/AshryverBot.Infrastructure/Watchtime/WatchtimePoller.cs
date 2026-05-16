@@ -1,10 +1,8 @@
-using AshryverBot.Database.Repositories;
 using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Infrastructure.StreamStats.Interfaces;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;
-using AshryverBot.Twitch.Helix.Models.Chat.GetChatters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

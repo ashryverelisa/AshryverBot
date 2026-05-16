@@ -1,6 +1,6 @@
-﻿using AshryverBot.Database.Entities;
-using AshryverBot.Database.Repositories;
-using AshryverBot.Database.Repositories.Interfaces;
+using AshryverBot.Database.Entities;
+using AshryverBot.Infrastructure.Commands;
+using AshryverBot.Infrastructure.Commands.Interfaces;
 using AshryverBot.Web.Components.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -9,7 +9,7 @@ namespace AshryverBot.Web.Components.Pages;
 
 public partial class Commands
 {
-    [Inject] public ICommandRepository CommandRepository { get; set; } = null!;
+    [Inject] public ICommandService CommandService { get; set; } = null!;
     [Inject] public IDialogService DialogService { get; set; } = null!;
     [Inject] public ISnackbar Snackbar { get; set; } = null!;
     private string _search = string.Empty;
@@ -20,7 +20,7 @@ public partial class Commands
     {
         try
         {
-            var commands = await CommandRepository.ListAsync();
+            var commands = await CommandService.ListAsync();
             _commands = commands.ToList();
         }
         finally
@@ -49,10 +49,10 @@ public partial class Commands
     {
         var previous = command.IsEnabled;
         command.IsEnabled = value;
-        command.UpdatedAt = DateTimeOffset.UtcNow;
         try
         {
-            await CommandRepository.UpdateAsync(command);
+            var updated = await CommandService.SetEnabledAsync(command.Id, value);
+            command.UpdatedAt = updated.UpdatedAt;
         }
         catch (Exception ex)
         {
@@ -85,18 +85,12 @@ public partial class Commands
         if (result is null || result.Canceled || result.Data is not CommandEntity entity)
             return;
 
-        var now = DateTimeOffset.UtcNow;
-        entity.Id = Guid.NewGuid();
-        entity.CreatedAt = now;
-        entity.UpdatedAt = now;
-        entity.UsageCount = 0;
-
         try
         {
-            await CommandRepository.CreateAsync(entity);
-            _commands.Add(entity);
+            var created = await CommandService.CreateAsync(ToDraft(entity));
+            _commands.Add(created);
             _commands = _commands.OrderBy(c => c.Name).ToList();
-            Snackbar.Add($"Command !{entity.Name} created.", Severity.Success);
+            Snackbar.Add($"Command !{created.Name} created.", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -119,17 +113,15 @@ public partial class Commands
         if (result is null || result.Canceled || result.Data is not CommandEntity edited)
             return;
 
-        edited.UpdatedAt = DateTimeOffset.UtcNow;
-
         try
         {
-            await CommandRepository.UpdateAsync(edited);
+            var updated = await CommandService.UpdateAsync(command.Id, ToDraft(edited));
 
-            var index = _commands.FindIndex(c => c.Id == edited.Id);
-            if (index >= 0) _commands[index] = edited;
+            var index = _commands.FindIndex(c => c.Id == updated.Id);
+            if (index >= 0) _commands[index] = updated;
             _commands = _commands.OrderBy(c => c.Name).ToList();
 
-            Snackbar.Add($"Command !{edited.Name} updated.", Severity.Success);
+            Snackbar.Add($"Command !{updated.Name} updated.", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -149,7 +141,7 @@ public partial class Commands
 
         try
         {
-            await CommandRepository.DeleteAsync(command.Id);
+            await CommandService.DeleteAsync(command.Id);
             _commands.Remove(command);
             Snackbar.Add($"Command !{command.Name} deleted.", Severity.Success);
         }
@@ -158,4 +150,11 @@ public partial class Commands
             Snackbar.Add($"Failed to delete command: {ex.Message}", Severity.Error);
         }
     }
+
+    private static CommandDraft ToDraft(CommandEntity entity) => new(
+        entity.Name,
+        entity.Response,
+        entity.CooldownSeconds,
+        entity.RequiredRole,
+        entity.IsEnabled);
 }
