@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text.Json;
+using AshryverBot.Twitch.EventSub.WebSocket.Interfaces;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;
 using AshryverBot.Twitch.Helix.Models.EventSub.Common;
 using AshryverBot.Twitch.Helix.Models.EventSub.CreateEventSubSubscription;

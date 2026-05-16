@@ -1,3 +1,5 @@
+using AshryverBot.Infrastructure.StreamStats.Interfaces;
+
 namespace AshryverBot.Infrastructure.StreamStats;
 
 internal class StreamStatsTracker(TimeProvider timeProvider) : IStreamStats, IStreamStatsWriter

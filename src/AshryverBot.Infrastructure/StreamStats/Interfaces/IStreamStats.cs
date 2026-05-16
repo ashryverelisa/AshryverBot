@@ -1,4 +1,4 @@
-namespace AshryverBot.Infrastructure.StreamStats;
+namespace AshryverBot.Infrastructure.StreamStats.Interfaces;
 
 public interface IStreamStats
 {

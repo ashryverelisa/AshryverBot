@@ -1,5 +1,6 @@
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.EventSub.WebSocket;
+using AshryverBot.Twitch.EventSub.WebSocket.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

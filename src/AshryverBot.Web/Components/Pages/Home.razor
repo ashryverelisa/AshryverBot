@@ -1,7 +1,7 @@
 @page "/"
 @implements IDisposable
-@inject AshryverBot.Infrastructure.BotStatus.IBotStatus BotStatus
-@inject AshryverBot.Infrastructure.StreamStats.IStreamStats StreamStats
+@inject AshryverBot.Infrastructure.BotStatus.Interfaces.IBotStatus BotStatus
+@inject AshryverBot.Infrastructure.StreamStats.Interfaces.IStreamStats StreamStats
 @inject TimeProvider TimeProvider
 
 <PageTitle>Dashboard · AshryverBot</PageTitle>

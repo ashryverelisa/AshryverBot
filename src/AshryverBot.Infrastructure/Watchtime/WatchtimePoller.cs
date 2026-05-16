@@ -1,5 +1,5 @@
 using AshryverBot.Database.Repositories;
-using AshryverBot.Infrastructure.StreamStats;
+using AshryverBot.Infrastructure.StreamStats.Interfaces;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;

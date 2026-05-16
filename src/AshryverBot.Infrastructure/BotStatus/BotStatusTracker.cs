@@ -1,4 +1,5 @@
-using AshryverBot.Twitch.EventSub.WebSocket;
+using AshryverBot.Infrastructure.BotStatus.Interfaces;
+using AshryverBot.Twitch.EventSub.WebSocket.Interfaces;
 
 namespace AshryverBot.Infrastructure.BotStatus;
 

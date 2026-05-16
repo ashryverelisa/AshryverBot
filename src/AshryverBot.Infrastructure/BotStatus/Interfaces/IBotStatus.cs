@@ -1,4 +1,4 @@
-namespace AshryverBot.Infrastructure.BotStatus;
+namespace AshryverBot.Infrastructure.BotStatus.Interfaces;
 
 public interface IBotStatus
 {

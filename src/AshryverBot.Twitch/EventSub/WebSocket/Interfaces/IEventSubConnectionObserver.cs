@@ -1,4 +1,4 @@
-namespace AshryverBot.Twitch.EventSub.WebSocket;
+namespace AshryverBot.Twitch.EventSub.WebSocket.Interfaces;
 
 public interface IEventSubConnectionObserver
 {
