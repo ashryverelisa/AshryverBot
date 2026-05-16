@@ -44,56 +44,12 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   OnClick="Submit"
+                   OnClick="@Submit"
                    Disabled="_saving">
             @(IsNew ? "Create" : "Save")
         </MudButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter] public CommandEntity Command { get; set; } = default!;
-    [Parameter] public bool IsNew { get; set; }
-
-    private MudForm _form = default!;
-    private CommandEntity _model = default!;
-    private bool _saving;
-
-    protected override void OnInitialized()
-    {
-        _model = new CommandEntity
-        {
-            Id = Command.Id,
-            Name = Command.Name,
-            Response = Command.Response,
-            IsEnabled = Command.IsEnabled,
-            CooldownSeconds = Command.CooldownSeconds,
-            RequiredRole = Command.RequiredRole,
-            UsageCount = Command.UsageCount,
-            CreatedAt = Command.CreatedAt,
-            UpdatedAt = Command.UpdatedAt,
-        };
-    }
-
-    private async Task Submit()
-    {
-        _saving = true;
-        try
-        {
-            await _form.ValidateAsync();
-            if (!_form.IsValid) return;
-            MudDialog.Close(DialogResult.Ok(_model));
-        }
-        finally
-        {
-            _saving = false;
-        }
-    }
-
-    private void Cancel() => MudDialog.Cancel();
-}
