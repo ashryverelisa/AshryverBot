@@ -1,4 +1,5 @@
 using AshryverBot.Database.Repositories;
+using AshryverBot.Infrastructure.StreamStats;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Twitch.Configuration;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;
@@ -14,6 +15,7 @@ public class WatchtimePoller(
     IServiceScopeFactory scopeFactory,
     IOptions<TwitchOptions> twitchOptions,
     IOptions<WatchtimePollerOptions> pollerOptions,
+    IStreamStatsWriter streamStats,
     TimeProvider timeProvider,
     ILogger<WatchtimePoller> logger) : BackgroundService
 {
@@ -90,9 +92,12 @@ public class WatchtimePoller(
 
         if (streamResponse.Data.Count == 0)
         {
+            streamStats.MarkOffline();
             logger.LogTrace("Stream offline; skipping watchtime tick.");
             return;
         }
+
+        streamStats.Update(streamResponse.Data.First().ViewerCount);
 
         var chatters = new List<WatchtimeChatter>();
         string? cursor = null;

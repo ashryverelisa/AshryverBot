@@ -1,6 +1,7 @@
 @page "/"
 @implements IDisposable
 @inject AshryverBot.Infrastructure.BotStatus.IBotStatus BotStatus
+@inject AshryverBot.Infrastructure.StreamStats.IStreamStats StreamStats
 @inject TimeProvider TimeProvider
 
 <PageTitle>Dashboard · AshryverBot</PageTitle>
@@ -35,8 +36,8 @@
                         <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Size="Size.Small" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary">Viewers</MudText>
                     </MudStack>
-                    <MudText Typo="Typo.h5">142</MudText>
-                    <MudText Typo="Typo.caption" Color="Color.Success">+12 in the last hour</MudText>
+                    <MudText Typo="Typo.h5">@(StreamStats.IsLive ? StreamStats.ViewerCount?.ToString() ?? "—" : "Offline")</MudText>
+                    <MudText Typo="Typo.caption" Color="@_viewerDeltaColor" Class="@_viewerDeltaClass">@_viewerDeltaLabel</MudText>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -128,15 +129,24 @@
 @code {
     private Timer? _timer;
     private string _uptimeLabel = string.Empty;
+    private string _viewerDeltaLabel = string.Empty;
+    private Color _viewerDeltaColor = Color.Default;
+    private string _viewerDeltaClass = "mud-text-secondary";
 
     protected override void OnInitialized()
     {
-        UpdateUptimeLabel();
+        Refresh();
         _timer = new Timer(_ =>
         {
-            UpdateUptimeLabel();
+            Refresh();
             InvokeAsync(StateHasChanged);
         }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private void Refresh()
+    {
+        UpdateUptimeLabel();
+        UpdateViewerDelta();
     }
 
     private void UpdateUptimeLabel()
@@ -152,6 +162,44 @@
         if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
 
         _uptimeLabel = elapsed.TotalDays >= 1 ? $"Connected for {(int)elapsed.TotalDays}d {elapsed.Hours:D2}:{elapsed.Minutes:D2} h" : $"Connected for {(int)elapsed.TotalHours:D2}:{elapsed.Minutes:D2} h";
+    }
+
+    private void UpdateViewerDelta()
+    {
+        if (!StreamStats.IsLive)
+        {
+            _viewerDeltaLabel = "stream offline";
+            _viewerDeltaColor = Color.Default;
+            _viewerDeltaClass = "mud-text-secondary";
+            return;
+        }
+
+        var delta = StreamStats.ViewerDeltaLastHour;
+        if (delta is null)
+        {
+            _viewerDeltaLabel = "collecting data…";
+            _viewerDeltaColor = Color.Default;
+            _viewerDeltaClass = "mud-text-secondary";
+            return;
+        }
+
+        var value = delta.Value;
+        if (value > 0)
+        {
+            _viewerDeltaLabel = $"+{value} in the last hour";
+            _viewerDeltaColor = Color.Success;
+        }
+        else if (value < 0)
+        {
+            _viewerDeltaLabel = $"{value} in the last hour";
+            _viewerDeltaColor = Color.Error;
+        }
+        else
+        {
+            _viewerDeltaLabel = "no change in the last hour";
+            _viewerDeltaColor = Color.Default;
+        }
+        _viewerDeltaClass = string.Empty;
     }
 
     public void Dispose() => _timer?.Dispose();
