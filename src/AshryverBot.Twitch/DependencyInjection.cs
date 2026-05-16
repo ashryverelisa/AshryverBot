@@ -1,6 +1,7 @@
 using AshryverBot.Twitch.Clients;
 using AshryverBot.Twitch.Clients.Interfaces;
 using AshryverBot.Twitch.Configuration;
+using AshryverBot.Twitch.EventSub.WebSocket;
 using AshryverBot.Twitch.Helix.Apis;
 using AshryverBot.Twitch.Helix.Apis.Interfaces;
 using AshryverBot.Twitch.Http;
@@ -62,6 +63,18 @@ public static class DependencyInjection
         services.AddScoped<IUsersApi, UsersApi>();
         services.AddScoped<IVideosApi, VideosApi>();
         services.AddScoped<IWhispersApi, WhispersApi>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddTwitchEventSubWebSocket(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddOptions<EventSubWebSocketOptions>()
+            .Bind(configuration.GetSection(EventSubWebSocketOptions.SectionName));
+
+        services.AddSingleton<EventSubWebSocketClient>();
 
         return services;
     }

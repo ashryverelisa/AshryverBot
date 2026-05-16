@@ -1,7 +1,11 @@
 using AshryverBot.Infrastructure.Chat;
 using AshryverBot.Infrastructure.Chat.Commands;
+using AshryverBot.Infrastructure.EventSub;
+using AshryverBot.Infrastructure.EventSub.Handlers;
 using AshryverBot.Infrastructure.Twitch.Tokens;
 using AshryverBot.Infrastructure.Watchtime;
+using AshryverBot.Twitch;
+using AshryverBot.Twitch.EventSub.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,8 +29,12 @@ public static class DependencyInjection
 
         services.AddScoped<IChatCommand, WatchtimeCommand>();
 
+        services.AddTwitchEventSubWebSocket(configuration);
+        services.AddSingleton<IEventSubAccessTokenProvider, BotEventSubAccessTokenProvider>();
+        services.AddScoped<IEventSubHandler, ChannelChatMessageHandler>();
+
         services.AddHostedService<WatchtimePoller>();
-        services.AddHostedService<EventSubChatClient>();
+        services.AddHostedService<EventSubWebSocketHostedService>();
 
         return services;
     }
