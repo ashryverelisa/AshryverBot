@@ -19,4 +19,8 @@
         <ProjectReference Include="..\AshryverBot.Twitch\AshryverBot.Twitch.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="AshryverBot.Infrastructure.Tests" />
+    </ItemGroup>
+
 </Project>
