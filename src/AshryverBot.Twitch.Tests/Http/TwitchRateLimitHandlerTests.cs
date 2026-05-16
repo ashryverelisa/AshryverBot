@@ -102,7 +102,7 @@ public class TwitchRateLimitHandlerTests
     [Fact]
     public async Task Retries_on_429_using_Ratelimit_Reset()
     {
-        var resetAt = 1_000_005L;
+        const long resetAt = 1_000_005L;
         var (client, inner, time) = Create((_, attempt) => attempt switch
         {
             0 => TooManyRequests(resetUnixSeconds: resetAt),

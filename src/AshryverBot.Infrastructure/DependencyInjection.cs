@@ -14,34 +14,35 @@ namespace AshryverBot.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAshryverBotInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.TryAddSingletonTimeProvider();
-        services.AddScoped<ITwitchTokenRefresher, TwitchTokenRefresher>();
+        public IServiceCollection AddAshryverBotInfrastructure(IConfiguration configuration)
+        {
+            services.TryAddSingletonTimeProvider();
+            services.AddScoped<ITwitchTokenRefresher, TwitchTokenRefresher>();
 
-        services.AddOptions<WatchtimePollerOptions>()
-            .Bind(configuration.GetSection(WatchtimePollerOptions.SectionName));
+            services.AddOptions<WatchtimePollerOptions>()
+                .Bind(configuration.GetSection(WatchtimePollerOptions.SectionName));
 
-        services.AddScoped<IChatResponder, ChatResponder>();
-        services.AddSingleton<IChatCommandDispatcher, ChatCommandDispatcher>();
+            services.AddScoped<IChatResponder, ChatResponder>();
+            services.AddSingleton<IChatCommandDispatcher, ChatCommandDispatcher>();
 
-        services.AddScoped<IChatCommand, WatchtimeCommand>();
+            services.AddScoped<IChatCommand, WatchtimeCommand>();
 
-        services.AddTwitchEventSubWebSocket(configuration);
-        services.AddSingleton<IEventSubAccessTokenProvider, BotEventSubAccessTokenProvider>();
-        services.AddScoped<IEventSubHandler, ChannelChatMessageHandler>();
+            services.AddTwitchEventSubWebSocket(configuration);
+            services.AddSingleton<IEventSubAccessTokenProvider, BotEventSubAccessTokenProvider>();
+            services.AddScoped<IEventSubHandler, ChannelChatMessageHandler>();
 
-        services.AddHostedService<WatchtimePoller>();
-        services.AddHostedService<EventSubWebSocketHostedService>();
+            services.AddHostedService<WatchtimePoller>();
+            services.AddHostedService<EventSubWebSocketHostedService>();
 
-        return services;
-    }
+            return services;
+        }
 
-    private static void TryAddSingletonTimeProvider(this IServiceCollection services)
-    {
-        if (services.Any(d => d.ServiceType == typeof(TimeProvider))) return;
-        services.AddSingleton(TimeProvider.System);
+        private void TryAddSingletonTimeProvider()
+        {
+            if (services.Any(d => d.ServiceType == typeof(TimeProvider))) return;
+            services.AddSingleton(TimeProvider.System);
+        }
     }
 }
