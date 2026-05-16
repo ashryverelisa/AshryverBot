@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using AshryverBot.Database.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -10,8 +12,12 @@ public interface IChatCommandDispatcher
 
 public class ChatCommandDispatcher(
     IServiceScopeFactory scopeFactory,
+    TimeProvider timeProvider,
     ILogger<ChatCommandDispatcher> logger) : IChatCommandDispatcher
 {
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _cooldowns
+        = new(StringComparer.OrdinalIgnoreCase);
+
     public async Task DispatchAsync(ChatMessage message, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -39,19 +45,67 @@ public class ChatCommandDispatcher(
         }
 
         await using var scope = scopeFactory.CreateAsyncScope();
-        var commands = scope.ServiceProvider.GetServices<IChatCommand>();
-        var match = commands.FirstOrDefault(c =>
-            string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
 
-        if (match is null) return;
+        var staticMatch = scope.ServiceProvider.GetServices<IChatCommand>()
+            .FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
 
+        if (staticMatch is not null)
+        {
+            try
+            {
+                await staticMatch.ExecuteAsync(new ChatCommandContext(message, arguments), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Chat command '!{Name}' failed.", name);
+            }
+            return;
+        }
+
+        var repository = scope.ServiceProvider.GetRequiredService<ICommandRepository>();
+        var entity = await repository.GetByNameAsync(name, cancellationToken);
+        if (entity is null || !entity.IsEnabled) return;
+
+        if (!TryAcquireCooldown(entity.Name, entity.CooldownSeconds))
+        {
+            logger.LogDebug("Chat command '!{Name}' is on cooldown — skipped.", entity.Name);
+            return;
+        }
+
+        var responder = scope.ServiceProvider.GetRequiredService<IChatResponder>();
         try
         {
-            await match.ExecuteAsync(new ChatCommandContext(message, arguments), cancellationToken);
+            await responder.ReplyAsync(
+                message.BroadcasterUserId,
+                entity.Response,
+                replyToMessageId: message.MessageId,
+                cancellationToken);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Chat command '!{Name}' failed.", name);
+            logger.LogError(ex, "Chat command '!{Name}' (db) failed.", name);
+        }
+    }
+
+    private bool TryAcquireCooldown(string commandName, int cooldownSeconds)
+    {
+        if (cooldownSeconds <= 0) return true;
+
+        var now = timeProvider.GetUtcNow();
+        var window = TimeSpan.FromSeconds(cooldownSeconds);
+
+        while (true)
+        {
+            if (_cooldowns.TryGetValue(commandName, out var last))
+            {
+                if (now - last < window) return false;
+
+                if (_cooldowns.TryUpdate(commandName, now, last)) return true;
+            }
+            else if (_cooldowns.TryAdd(commandName, now))
+            {
+                return true;
+            }
         }
     }
 }
