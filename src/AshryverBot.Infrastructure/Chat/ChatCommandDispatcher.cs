@@ -75,10 +75,9 @@ public class ChatCommandDispatcher(
         var responder = scope.ServiceProvider.GetRequiredService<IChatResponder>();
         try
         {
-            await responder.ReplyAsync(
+            await responder.SendAsync(
                 message.BroadcasterUserId,
                 entity.Response,
-                replyToMessageId: message.MessageId,
                 cancellationToken);
         }
         catch (Exception ex)

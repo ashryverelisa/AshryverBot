@@ -15,10 +15,9 @@ public class ChatResponder(
 {
     private readonly TwitchOptions _twitchOptions = twitchOptions.Value;
 
-    public async Task ReplyAsync(
+    public async Task SendAsync(
         string broadcasterId,
         string message,
-        string? replyToMessageId = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(broadcasterId);
@@ -45,7 +44,6 @@ public class ChatResponder(
                 BroadcasterId = broadcasterId,
                 SenderId = botUserId,
                 Message = message,
-                ReplyParentMessageId = replyToMessageId,
             },
             cancellationToken);
     }

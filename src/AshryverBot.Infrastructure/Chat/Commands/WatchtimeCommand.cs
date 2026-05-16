@@ -28,7 +28,7 @@ public class WatchtimeCommand(
             reply = $"@{displayName} hast {formatted} geschaut";
         }
 
-        await responder.ReplyAsync(msg.BroadcasterUserId, reply, replyToMessageId: msg.MessageId, cancellationToken);
+        await responder.SendAsync(msg.BroadcasterUserId, reply, cancellationToken);
     }
 
     internal static string FormatDuration(TimeSpan duration)
