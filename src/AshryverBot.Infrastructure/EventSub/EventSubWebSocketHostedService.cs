@@ -8,10 +8,12 @@ namespace AshryverBot.Infrastructure.EventSub;
 
 public class EventSubWebSocketHostedService(
     EventSubWebSocketClient client,
+    IEnumerable<IEventSubConnectionObserver> connectionObservers,
     IOptions<TwitchOptions> twitchOptions,
     ILogger<EventSubWebSocketHostedService> logger) : BackgroundService
 {
     private readonly TwitchOptions _twitchOptions = twitchOptions.Value;
+    private readonly IReadOnlyList<IEventSubConnectionObserver> _connectionObservers = connectionObservers.ToArray();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -40,11 +42,13 @@ public class EventSubWebSocketHostedService(
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
+                await NotifyDisconnectedAsync(CancellationToken.None);
                 return;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "EventSub WebSocket errored; reconnecting in {Delay}.", backoff);
+                await NotifyDisconnectedAsync(CancellationToken.None);
                 try
                 {
                     await Task.Delay(backoff, stoppingToken);
@@ -55,6 +59,24 @@ public class EventSubWebSocketHostedService(
                 }
 
                 backoff = TimeSpan.FromSeconds(Math.Min(backoff.TotalSeconds * 2, maxBackoff.TotalSeconds));
+                continue;
+            }
+
+            await NotifyDisconnectedAsync(CancellationToken.None);
+        }
+    }
+
+    private async Task NotifyDisconnectedAsync(CancellationToken cancellationToken)
+    {
+        foreach (var observer in _connectionObservers)
+        {
+            try
+            {
+                await observer.OnDisconnectedAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "EventSub connection observer {Observer} failed in OnDisconnected.", observer.GetType().Name);
             }
         }
     }

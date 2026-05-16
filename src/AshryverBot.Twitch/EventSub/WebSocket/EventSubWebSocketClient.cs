@@ -13,12 +13,14 @@ namespace AshryverBot.Twitch.EventSub.WebSocket;
 public class EventSubWebSocketClient(
     IServiceScopeFactory scopeFactory,
     IEventSubAccessTokenProvider accessTokenProvider,
+    IEnumerable<IEventSubConnectionObserver> connectionObservers,
     IOptions<EventSubWebSocketOptions> options,
     ILogger<EventSubWebSocketClient> logger)
 {
     private const string TransportMethod = "websocket";
 
     private readonly EventSubWebSocketOptions _options = options.Value;
+    private readonly IReadOnlyList<IEventSubConnectionObserver> _connectionObservers = connectionObservers.ToArray();
 
     public Task RunAsync(EventSubSubscriptionContext context, CancellationToken cancellationToken)
         => RunConnectionAsync(_options.Url, context, cancellationToken);
@@ -56,6 +58,7 @@ public class EventSubWebSocketClient(
                         ?? throw new InvalidOperationException("EventSub session_welcome missing session.id.");
                     await SubscribeAllAsync(sessionId, context, cancellationToken);
                     subscribed = true;
+                    await NotifyConnectedAsync(cancellationToken);
                     break;
 
                 case EventSubMessageTypes.SessionKeepalive:
@@ -104,6 +107,21 @@ public class EventSubWebSocketClient(
 
             buffer.Write(rented.AsSpan(0, result.Count));
             if (result.EndOfMessage) return buffer.WrittenMemory;
+        }
+    }
+
+    private async Task NotifyConnectedAsync(CancellationToken cancellationToken)
+    {
+        foreach (var observer in _connectionObservers)
+        {
+            try
+            {
+                await observer.OnConnectedAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "EventSub connection observer {Observer} failed in OnConnected.", observer.GetType().Name);
+            }
         }
     }
 

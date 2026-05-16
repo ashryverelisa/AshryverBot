@@ -1,4 +1,7 @@
 @page "/"
+@implements IDisposable
+@inject AshryverBot.Infrastructure.BotStatus.IBotStatus BotStatus
+@inject TimeProvider TimeProvider
 
 <PageTitle>Dashboard · AshryverBot</PageTitle>
 
@@ -15,11 +18,13 @@
             <MudPaper Class="pa-4" Elevation="2">
                 <MudStack Spacing="1">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
+                        <MudIcon Icon="@Icons.Material.Filled.Circle"
+                                 Color="@(BotStatus.IsOnline ? Color.Success : Color.Error)"
+                                 Size="Size.Small" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary">Bot status</MudText>
                     </MudStack>
-                    <MudText Typo="Typo.h5">Online</MudText>
-                    <MudText Typo="Typo.caption" Class="mud-text-secondary">Connected for 02:14 h</MudText>
+                    <MudText Typo="Typo.h5">@(BotStatus.IsOnline ? "Online" : "Offline")</MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@_uptimeLabel</MudText>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -119,3 +124,35 @@
         </MudItem>
     </MudGrid>
 </MudStack>
+
+@code {
+    private Timer? _timer;
+    private string _uptimeLabel = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        UpdateUptimeLabel();
+        _timer = new Timer(_ =>
+        {
+            UpdateUptimeLabel();
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private void UpdateUptimeLabel()
+    {
+        var connectedSince = BotStatus.ConnectedSince;
+        if (connectedSince is null)
+        {
+            _uptimeLabel = "Not connected";
+            return;
+        }
+
+        var elapsed = TimeProvider.GetUtcNow() - connectedSince.Value;
+        if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
+
+        _uptimeLabel = elapsed.TotalDays >= 1 ? $"Connected for {(int)elapsed.TotalDays}d {elapsed.Hours:D2}:{elapsed.Minutes:D2} h" : $"Connected for {(int)elapsed.TotalHours:D2}:{elapsed.Minutes:D2} h";
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
