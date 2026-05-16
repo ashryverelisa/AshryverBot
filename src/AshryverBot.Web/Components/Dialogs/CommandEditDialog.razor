@@ -1,0 +1,99 @@
+@using AshryverBot.Database.Entities
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="_model">
+            <MudTextField T="string"
+                          @bind-Value="_model.Name"
+                          Label="Name"
+                          Required="true"
+                          RequiredError="Name is required."
+                          MaxLength="64"
+                          Adornment="Adornment.Start"
+                          AdornmentText="!"
+                          HelperText="Used as !name in chat."
+                          Immediate="true" />
+            <MudTextField T="string"
+                          @bind-Value="_model.Response"
+                          Label="Response"
+                          Required="true"
+                          RequiredError="Response is required."
+                          MaxLength="500"
+                          Lines="3"
+                          Class="mt-3" />
+            <MudNumericField T="int"
+                             @bind-Value="_model.CooldownSeconds"
+                             Label="Cooldown (seconds)"
+                             Min="0"
+                             Max="3600"
+                             Class="mt-3" />
+            <MudSelect T="CommandRole"
+                       @bind-Value="_model.RequiredRole"
+                       Label="Required role"
+                       Class="mt-3">
+                @foreach (var role in Enum.GetValues<CommandRole>())
+                {
+                    <MudSelectItem Value="role">@role</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSwitch T="bool"
+                       @bind-Value="_model.IsEnabled"
+                       Color="Color.Primary"
+                       Label="Enabled"
+                       Class="mt-3" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="_saving">
+            @(IsNew ? "Create" : "Save")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public CommandEntity Command { get; set; } = default!;
+    [Parameter] public bool IsNew { get; set; }
+
+    private MudForm _form = default!;
+    private CommandEntity _model = default!;
+    private bool _saving;
+
+    protected override void OnInitialized()
+    {
+        _model = new CommandEntity
+        {
+            Id = Command.Id,
+            Name = Command.Name,
+            Response = Command.Response,
+            IsEnabled = Command.IsEnabled,
+            CooldownSeconds = Command.CooldownSeconds,
+            RequiredRole = Command.RequiredRole,
+            UsageCount = Command.UsageCount,
+            CreatedAt = Command.CreatedAt,
+            UpdatedAt = Command.UpdatedAt,
+        };
+    }
+
+    private async Task Submit()
+    {
+        _saving = true;
+        try
+        {
+            await _form.ValidateAsync();
+            if (!_form.IsValid) return;
+            MudDialog.Close(DialogResult.Ok(_model));
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

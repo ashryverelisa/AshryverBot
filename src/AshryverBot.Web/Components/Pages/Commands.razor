@@ -34,7 +34,12 @@
             </MudText>
         </MudToolBar>
         <MudDivider />
-        <MudTable Items="FilteredCommands" Hover="true" Breakpoint="Breakpoint.Sm" Dense="false">
+        <MudTable Items="FilteredCommands"
+                  Hover="true"
+                  Breakpoint="Breakpoint.Sm"
+                  Dense="false"
+                  Loading="_loading"
+                  LoadingProgressColor="Color.Primary">
             <HeaderContent>
                 <MudTh Style="width: 80px;">Active</MudTh>
                 <MudTh>Command</MudTh>
@@ -45,7 +50,10 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
-                    <MudSwitch T="bool" @bind-Value="context.Enabled" Color="Color.Primary" />
+                    <MudSwitch T="bool"
+                               Value="context.IsEnabled"
+                               ValueChanged="@(v => OnToggleEnabled(context, v))"
+                               Color="Color.Primary" />
                 </MudTd>
                 <MudTd>
                     <MudText Typo="Typo.body2" Style="font-family: monospace;">!@context.Name</MudText>
@@ -55,12 +63,14 @@
                 </MudTd>
                 <MudTd>@context.CooldownSeconds s</MudTd>
                 <MudTd>
-                    <MudChip T="string" Size="Size.Small" Color="@PermissionColor(context.Permission)" Variant="Variant.Filled">
-                        @context.Permission
+                    <MudChip T="string" Size="Size.Small" Color="@PermissionColor(context.RequiredRole)" Variant="Variant.Filled">
+                        @context.RequiredRole
                     </MudChip>
                 </MudTd>
                 <MudTd>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Size="Size.Small"
+                                   OnClick="@(() => OpenEditDialog(context))" />
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Size="Size.Small"
                                    Color="Color.Error"
@@ -73,55 +83,3 @@
         </MudTable>
     </MudPaper>
 </MudStack>
-
-@code {
-    private string _search = string.Empty;
-
-    private readonly List<CommandRow> _commands = new()
-    {
-        new() { Name = "lurk",    Response = "{user} is now lurking in the background. See you later!", CooldownSeconds = 5,  Permission = "Everyone", Enabled = true  },
-        new() { Name = "discord", Response = "Join the Discord: https://discord.gg/example",       CooldownSeconds = 30, Permission = "Everyone", Enabled = true  },
-        new() { Name = "socials", Response = "Follow me on Twitter @example and YouTube/example",  CooldownSeconds = 60, Permission = "Everyone", Enabled = true  },
-        new() { Name = "uptime",  Response = "The stream has been live for {uptime}.",             CooldownSeconds = 10, Permission = "Everyone", Enabled = true  },
-        new() { Name = "so",      Response = "Go check out {target}: twitch.tv/{target}",          CooldownSeconds = 0,  Permission = "Mods",     Enabled = true  },
-        new() { Name = "ban",     Response = "Bans a user from the chat.",                         CooldownSeconds = 0,  Permission = "Mods",     Enabled = false },
-    };
-
-    private IEnumerable<CommandRow> FilteredCommands =>
-        string.IsNullOrWhiteSpace(_search)
-            ? _commands
-            : _commands.Where(c =>
-                c.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                c.Response.Contains(_search, StringComparison.OrdinalIgnoreCase));
-
-    private static Color PermissionColor(string permission) => permission switch
-    {
-        "Mods"    => Color.Warning,
-        "VIP"     => Color.Tertiary,
-        "Sub"     => Color.Secondary,
-        _         => Color.Default,
-    };
-
-    private void Delete(CommandRow row) => _commands.Remove(row);
-
-    private void OpenAddDialog()
-    {
-        _commands.Add(new CommandRow
-        {
-            Name = "new",
-            Response = "Enter description here.",
-            CooldownSeconds = 10,
-            Permission = "Everyone",
-            Enabled = false,
-        });
-    }
-
-    private sealed class CommandRow
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Response { get; set; } = string.Empty;
-        public int CooldownSeconds { get; set; }
-        public string Permission { get; set; } = "Everyone";
-        public bool Enabled { get; set; }
-    }
-}
