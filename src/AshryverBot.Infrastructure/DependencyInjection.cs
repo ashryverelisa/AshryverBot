@@ -3,6 +3,8 @@ using AshryverBot.Infrastructure.BotStatus.Interfaces;
 using AshryverBot.Infrastructure.Chat;
 using AshryverBot.Infrastructure.Chat.Commands;
 using AshryverBot.Infrastructure.Chat.Interfaces;
+using AshryverBot.Infrastructure.CommandStats;
+using AshryverBot.Infrastructure.CommandStats.Interfaces;
 using AshryverBot.Infrastructure.Commands;
 using AshryverBot.Infrastructure.Commands.Interfaces;
 using AshryverBot.Infrastructure.EventSub;
@@ -49,6 +51,10 @@ public static class DependencyInjection
             services.AddSingleton<StreamStatsTracker>();
             services.AddSingleton<IStreamStats>(sp => sp.GetRequiredService<StreamStatsTracker>());
             services.AddSingleton<IStreamStatsWriter>(sp => sp.GetRequiredService<StreamStatsTracker>());
+
+            services.AddSingleton<CommandStatsTracker>();
+            services.AddSingleton<ICommandStats>(sp => sp.GetRequiredService<CommandStatsTracker>());
+            services.AddSingleton<ICommandStatsWriter>(sp => sp.GetRequiredService<CommandStatsTracker>());
 
             services.AddHostedService<WatchtimePoller>();
             services.AddHostedService<EventSubWebSocketHostedService>();

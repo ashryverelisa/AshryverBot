@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Infrastructure.Chat.Commands;
 using AshryverBot.Infrastructure.Chat.Interfaces;
+using AshryverBot.Infrastructure.CommandStats.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -15,6 +16,7 @@ public interface IChatCommandDispatcher
 public class ChatCommandDispatcher(
     IServiceScopeFactory scopeFactory,
     TimeProvider timeProvider,
+    ICommandStatsWriter commandStats,
     ILogger<ChatCommandDispatcher> logger) : IChatCommandDispatcher
 {
     private readonly ConcurrentDictionary<string, DateTimeOffset> _cooldowns
@@ -61,6 +63,7 @@ public class ChatCommandDispatcher(
             {
                 logger.LogError(ex, "Chat command '!{Name}' failed.", name);
             }
+            commandStats.RecordExecution();
             return;
         }
 
@@ -86,6 +89,7 @@ public class ChatCommandDispatcher(
         {
             logger.LogError(ex, "Chat command '!{Name}' (db) failed.", name);
         }
+        commandStats.RecordExecution();
     }
 
     private bool TryAcquireCooldown(string commandName, int cooldownSeconds)

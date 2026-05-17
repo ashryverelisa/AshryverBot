@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject AshryverBot.Infrastructure.BotStatus.Interfaces.IBotStatus BotStatus
 @inject AshryverBot.Infrastructure.StreamStats.Interfaces.IStreamStats StreamStats
+@inject AshryverBot.Infrastructure.CommandStats.Interfaces.ICommandStats CommandStats
 @inject TimeProvider TimeProvider
 
 <PageTitle>Dashboard · AshryverBot</PageTitle>
@@ -48,7 +49,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Terminal" Color="Color.Tertiary" Size="Size.Small" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary">Commands executed</MudText>
                     </MudStack>
-                    <MudText Typo="Typo.h5">87</MudText>
+                    <MudText Typo="Typo.h5">@CommandStats.ExecutedToday</MudText>
                     <MudText Typo="Typo.caption" Class="mud-text-secondary">today</MudText>
                 </MudStack>
             </MudPaper>

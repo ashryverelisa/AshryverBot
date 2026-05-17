@@ -3,6 +3,7 @@ using AshryverBot.Database.Repositories.Interfaces;
 using AshryverBot.Infrastructure.Chat;
 using AshryverBot.Infrastructure.Chat.Commands;
 using AshryverBot.Infrastructure.Chat.Interfaces;
+using AshryverBot.Infrastructure.CommandStats.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
@@ -15,6 +16,7 @@ public class ChatCommandDispatcherTests
 {
     private readonly ICommandRepository _repository = Substitute.For<ICommandRepository>();
     private readonly IChatResponder _responder = Substitute.For<IChatResponder>();
+    private readonly ICommandStatsWriter _commandStats = Substitute.For<ICommandStatsWriter>();
     private readonly FakeTimeProvider _time = new(new DateTimeOffset(2026, 5, 17, 12, 0, 0, TimeSpan.Zero));
 
     private ChatCommandDispatcher BuildDispatcher(params IChatCommand[] staticCommands)
@@ -27,7 +29,7 @@ public class ChatCommandDispatcherTests
             services.AddSingleton(cmd);
         }
         var scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
-        return new ChatCommandDispatcher(scopeFactory, _time, NullLogger<ChatCommandDispatcher>.Instance);
+        return new ChatCommandDispatcher(scopeFactory, _time, _commandStats, NullLogger<ChatCommandDispatcher>.Instance);
     }
 
     private static ChatMessage MessageWithText(string text) =>
