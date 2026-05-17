@@ -21,6 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{B3D1F5
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{D8E4F7A2-3B1C-4E5A-9F6D-2A8B3C4D5E6F}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshryverBot.Twitch.Tests", "AshryverBot.Twitch.Tests\AshryverBot.Twitch.Tests.csproj", "{5E3D18AC-EEA9-44D7-9FC9-91BA0A4799D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshryverBot.Database.Tests", "AshryverBot.Database.Tests\AshryverBot.Database.Tests.csproj", "{6B1712C2-1890-484D-A6AE-4D91BCEE346C}"
