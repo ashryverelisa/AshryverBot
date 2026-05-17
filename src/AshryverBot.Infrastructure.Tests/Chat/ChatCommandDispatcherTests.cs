@@ -202,4 +202,90 @@ public class ChatCommandDispatcherTests
 
         Assert.Null(ex);
     }
+
+    [Fact]
+    public async Task Static_command_execution_is_recorded()
+    {
+        var staticCmd = Substitute.For<IChatCommand>();
+        staticCmd.Name.Returns("hello");
+        var dispatcher = BuildDispatcher(staticCmd);
+
+        await dispatcher.DispatchAsync(MessageWithText("!hello"), CancellationToken.None);
+
+        _commandStats.Received(1).RecordExecution();
+    }
+
+    [Fact]
+    public async Task Static_command_execution_is_recorded_even_when_command_throws()
+    {
+        var staticCmd = Substitute.For<IChatCommand>();
+        staticCmd.Name.Returns("boom");
+        staticCmd.ExecuteAsync(Arg.Any<ChatCommandContext>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new InvalidOperationException("boom"));
+        var dispatcher = BuildDispatcher(staticCmd);
+
+        await dispatcher.DispatchAsync(MessageWithText("!boom"), CancellationToken.None);
+
+        _commandStats.Received(1).RecordExecution();
+    }
+
+    [Fact]
+    public async Task Db_command_execution_is_recorded()
+    {
+        var dispatcher = BuildDispatcher();
+        _repository.GetByNameAsync("hi", Arg.Any<CancellationToken>())
+            .Returns(new CommandEntity { Name = "hi", Response = "hello", IsEnabled = true });
+
+        await dispatcher.DispatchAsync(MessageWithText("!hi"), CancellationToken.None);
+
+        _commandStats.Received(1).RecordExecution();
+    }
+
+    [Fact]
+    public async Task Db_command_disabled_is_not_recorded()
+    {
+        var dispatcher = BuildDispatcher();
+        _repository.GetByNameAsync("hi", Arg.Any<CancellationToken>())
+            .Returns(new CommandEntity { Name = "hi", Response = "hello", IsEnabled = false });
+
+        await dispatcher.DispatchAsync(MessageWithText("!hi"), CancellationToken.None);
+
+        _commandStats.DidNotReceive().RecordExecution();
+    }
+
+    [Fact]
+    public async Task Db_command_unknown_is_not_recorded()
+    {
+        var dispatcher = BuildDispatcher();
+        _repository.GetByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((CommandEntity?)null);
+
+        await dispatcher.DispatchAsync(MessageWithText("!nope"), CancellationToken.None);
+
+        _commandStats.DidNotReceive().RecordExecution();
+    }
+
+    [Fact]
+    public async Task Db_command_skipped_by_cooldown_is_not_recorded()
+    {
+        var dispatcher = BuildDispatcher();
+        _repository.GetByNameAsync("hi", Arg.Any<CancellationToken>())
+            .Returns(new CommandEntity { Name = "hi", Response = "hello", IsEnabled = true, CooldownSeconds = 10 });
+
+        await dispatcher.DispatchAsync(MessageWithText("!hi"), CancellationToken.None);
+        _time.Advance(TimeSpan.FromSeconds(5));
+        await dispatcher.DispatchAsync(MessageWithText("!hi"), CancellationToken.None);
+
+        _commandStats.Received(1).RecordExecution();
+    }
+
+    [Fact]
+    public async Task Non_command_text_is_not_recorded()
+    {
+        var dispatcher = BuildDispatcher();
+
+        await dispatcher.DispatchAsync(MessageWithText("hello there"), CancellationToken.None);
+
+        _commandStats.DidNotReceive().RecordExecution();
+    }
 }

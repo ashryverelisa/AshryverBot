@@ -9,6 +9,8 @@ using AshryverBot.Infrastructure.Commands;
 using AshryverBot.Infrastructure.Commands.Interfaces;
 using AshryverBot.Infrastructure.EventSub;
 using AshryverBot.Infrastructure.EventSub.Handlers;
+using AshryverBot.Infrastructure.FollowerStats;
+using AshryverBot.Infrastructure.FollowerStats.Interfaces;
 using AshryverBot.Infrastructure.StreamStats;
 using AshryverBot.Infrastructure.StreamStats.Interfaces;
 using AshryverBot.Infrastructure.Twitch.Tokens;
@@ -43,6 +45,7 @@ public static class DependencyInjection
             services.AddTwitchEventSubWebSocket(configuration);
             services.AddSingleton<IEventSubAccessTokenProvider, BotEventSubAccessTokenProvider>();
             services.AddScoped<IEventSubHandler, ChannelChatMessageHandler>();
+            services.AddScoped<IEventSubHandler, ChannelFollowHandler>();
 
             services.AddSingleton<BotStatusTracker>();
             services.AddSingleton<IBotStatus>(sp => sp.GetRequiredService<BotStatusTracker>());
@@ -55,6 +58,10 @@ public static class DependencyInjection
             services.AddSingleton<CommandStatsTracker>();
             services.AddSingleton<ICommandStats>(sp => sp.GetRequiredService<CommandStatsTracker>());
             services.AddSingleton<ICommandStatsWriter>(sp => sp.GetRequiredService<CommandStatsTracker>());
+
+            services.AddSingleton<FollowerStatsTracker>();
+            services.AddSingleton<IFollowerStats>(sp => sp.GetRequiredService<FollowerStatsTracker>());
+            services.AddSingleton<IFollowerStatsWriter>(sp => sp.GetRequiredService<FollowerStatsTracker>());
 
             services.AddHostedService<WatchtimePoller>();
             services.AddHostedService<EventSubWebSocketHostedService>();

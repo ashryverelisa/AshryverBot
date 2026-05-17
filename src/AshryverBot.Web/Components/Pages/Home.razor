@@ -3,6 +3,7 @@
 @inject AshryverBot.Infrastructure.BotStatus.Interfaces.IBotStatus BotStatus
 @inject AshryverBot.Infrastructure.StreamStats.Interfaces.IStreamStats StreamStats
 @inject AshryverBot.Infrastructure.CommandStats.Interfaces.ICommandStats CommandStats
+@inject AshryverBot.Infrastructure.FollowerStats.Interfaces.IFollowerStats FollowerStats
 @inject TimeProvider TimeProvider
 
 <PageTitle>Dashboard · AshryverBot</PageTitle>
@@ -61,7 +62,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Error" Size="Size.Small" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary">New followers</MudText>
                     </MudStack>
-                    <MudText Typo="Typo.h5">5</MudText>
+                    <MudText Typo="Typo.h5">@FollowerStats.NewToday</MudText>
                     <MudText Typo="Typo.caption" Class="mud-text-secondary">today</MudText>
                 </MudStack>
             </MudPaper>
